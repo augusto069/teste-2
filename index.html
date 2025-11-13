@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Orçamento Técnico - Pedreiro MEI</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- html2pdf (CDN) usado para gerar e baixar PDF automaticamente -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Orçamento — Mão de Obra</h1>
+      <p class="lead">Cálculo metragens de material (piso / azulejo).</p>
+    </header>
+
+    <!-- Prestador -->
+    <section class="card" id="card-prestador">
+      <h3>Dados do Prestador</h3>
+      <div class="grid">
+        <div>
+          <label>Nome</label>
+          <input id="prestadorNome" type="text" placeholder="Nome do profissional ou empresa">
+        </div>
+        <div>
+          <label>Telefone</label>
+          <input id="prestadorTelefone" type="text" placeholder="(xx) xxxxx-xxxx">
+        </div>
+        <div>
+          <label>E-mail</label>
+          <input id="prestadorEmail" type="email" placeholder="email@exemplo.com">
+        </div>
+        <div style="grid-column:1/3">
+          <label>CNPJ / MEI</label>
+          <input id="prestadorCnpj" type="text" placeholder="00.000.000/0000-00 ou MEI">
+        </div>
+        <div>
+          <label>Endereço (opcional)</label>
+          <input id="prestadorEndereco" type="text" placeholder="Endereço do prestador (opcional)">
+        </div>
+      </div>
+    </section>
+
+    <!-- Contratante -->
+    <section class="card">
+      <h3>Dados do Contratante</h3>
+      <div class="grid">
+        <div>
+          <label>Nome</label>
+          <input id="contratanteNome" type="text" placeholder="Nome do cliente">
+        </div>
+        <div>
+          <label>Telefone</label>
+          <input id="contratanteTelefone" type="text" placeholder="(xx) xxxxx-xxxx">
+        </div>
+        <div>
+          <label>E-mail</label>
+          <input id="contratanteEmail" type="email" placeholder="email@cliente.com">
+        </div>
+        <div style="grid-column:1/3">
+          <label>Endereço</label>
+          <input id="contratanteEndereco" type="text" placeholder="Endereço do serviço">
+        </div>
+      </div>
+    </section>
+
+    <!-- Ambientes -->
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Ambientes</h3>
+        <div style="display:flex;gap:8px">
+          <button class="ghost" onclick="limparAmbientes()">Limpar Ambientes</button>
+          <button onclick="adicionarAmbiente()">+ Adicionar Ambiente</button>
+        </div>
+      </div>
+
+      <div id="ambientesContainer"></div>
+      <p class="small" style="margin-top:10px">Adicione portas/janelas para descontar áreas. Marque <strong>Incluir Azulejo</strong> para calcular área e mão de obra de revestimento vertical.</p>
+    </section>
+
+    <!-- Info gerais e ações -->
+    <section class="card">
+      <h3>Informações Gerais</h3>
+      <div class="grid-2">
+        <div>
+          <label>Data do Orçamento</label>
+          <input id="dataOrcamento" type="date">
+        </div>
+        <div>
+          <label>Prazo Estimado</label>
+          <input id="prazoEstimado" type="text" placeholder="Ex: 5 dias úteis">
+        </div>
+      </div>
+
+      <div style="margin-top:10px" class="grid-2">
+        <div>
+          <label>Margem de Segurança (%) — opcional (aplicada apenas à metragem de materiais)</label>
+          <input id="margem" type="number" placeholder="Ex: 10">
+          <div class="muted" style="margin-top:6px">Se preenchido, a quantidade de material a ser encomendada será aumentada por este percentual. Não altera preço da mão de obra.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <label style="visibility:hidden">placeholder</label>
+            <div style="display:flex;gap:8px">
+              <button onclick="calcularTotal()">Calcular</button>
+              <button class="ghost" onclick="mostrarPreview()">Pré-visualizar</button>
+              <button onclick="gerarPDFProfissional()">Baixar PDF Profissional</button>
+            </div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="muted">Total estimado (mão de obra)</div>
+            <div class="total" id="valorTotal">R$ 0,00</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <button id="btnObservacoes" class="ghost" onclick="mostrarCampoObservacoes()">+ Adicionar Observações</button>
+        <div id="campoObservacoes" style="display:none;margin-top:8px">
+          <label>Observações</label>
+          <textarea id="observacoes" placeholder="Ex: validade do orçamento, condições, forma de pagamento..."></textarea>
+        </div>
+      </div>
+
+      <div id="previewArea" style="margin-top:14px;display:none">
+        <h4>Pré-visualização resumida</h4>
+        <table class="table-preview" id="previewTable"><thead><tr>
+          <th>Ambiente</th><th>Piso (m²)</th><th>Descontos (m²)</th><th>Área Líquida (m²)</th><th>Azulejo (m²)</th><th>Material Piso c/ Margem (m²)</th><th>Material Azulejo c/ Margem (m²)</th><th>Subtotal (R$)</th>
+        </tr></thead><tbody></tbody></table>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px"><div class="muted">Total (mão de obra): <strong id="previewTotal">R$ 0,00</strong></div></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
